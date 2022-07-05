@@ -8,6 +8,70 @@ public class CustomLinkedList <E>  extends AbstractSequentialList<E>
         private int size = 0;
         private СustomNode<E> tail;
 
+        public CustomLinkedList(){
+
+        }
+
+    public boolean remove(Object o) {
+        if (o == null) {
+            for ( CustomLinkedList.СustomNode<E> x = head; x != null; x = x.next) {
+                if (x.e == null) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        } else {
+            for ( CustomLinkedList.СustomNode<E> x = head; x != null; x = x.next) {
+                if (o.equals(x.e)) {
+                    unlink(x);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    E unlink(CustomLinkedList.СustomNode<E> x) {
+        final E element = x.e;
+        final CustomLinkedList.СustomNode<E> next = x.next;
+        final CustomLinkedList.СustomNode<E> previous = x.previous;
+
+        if (previous == null) {
+            head = next;
+        } else {
+            previous.next = next;
+            x.previous = null;
+        }
+
+        if (next == null) {
+            tail = previous;
+        } else {
+            next.previous = previous;
+            x.next = null;
+        }
+
+        x.e = null;
+        return element;
+    }
+
+        public E get(int index) {
+            return node(index).e;
+        }
+
+        public E getFirst() {
+            final СustomNode<E> f = head;
+            if (f == null)
+                throw new NoSuchElementException();
+            return f.e;
+        }
+
+        public E getLast() {
+            final СustomNode<E> l = tail;
+            if (l == null)
+                throw new NoSuchElementException();
+            return l.e;
+        }
+
         private static class СustomNode<E>{
             // элемент
             E e;
@@ -25,30 +89,52 @@ public class CustomLinkedList <E>  extends AbstractSequentialList<E>
     }
 
     private void linkFirst(E e) {
-        final СustomNode<E> f = head;
-        final СustomNode<E> newNode = new СustomNode<E>(null, e, f);
+        final CustomLinkedList.СustomNode<E> f = head;
+        final CustomLinkedList.СustomNode<E> newNode = new СustomNode<E>(null, e, f);
         tail = newNode;
         if (f == null)
-            tail = newNode;
+            head = newNode;
         else
             f.previous = newNode;
-        size++;
-        modCount++;
+        this.size++;
     }
-
     /**
      * Links e as last element.
      */
     void linkLast(E e) {
-        final СustomNode<E> l = tail;
-        final СustomNode<E> newNode = new СustomNode<E>(l, e, null);
+        final CustomLinkedList.СustomNode<E> l = tail;
+        final CustomLinkedList.СustomNode<E> newNode = new СustomNode<E>(l, e, null);
         tail = newNode;
         if (l == null)
-            head = newNode;
+            tail = newNode;
         else
             l.next = newNode;
-        size++;
-        modCount++;
+        this.size++;
+    }
+
+
+
+    СustomNode <E> node(int index) {
+        // assert isElementIndex(index);
+
+        if (index < (size >> 1)) {
+            CustomLinkedList.СustomNode<E> x = head;
+            for (int i = 0; i < index; i++)
+                x = x.next;
+            return x;
+        } else {
+            CustomLinkedList.СustomNode<E> x = tail;
+            for (int i = size - 1; i > index; i--)
+                x = x.previous;
+            return x;
+        }
+    }
+
+    public E set(int index, E element) {
+        СustomNode <E> x = node(index);
+        E oldVal = x.e;
+        x.e = element;
+        return oldVal;
     }
 
     @Override
@@ -56,14 +142,19 @@ public class CustomLinkedList <E>  extends AbstractSequentialList<E>
         return null;
     }
 
+    public boolean add(E e) {
+        linkLast(e);
+        return true;
+    }
+
     @Override
     public void addFirst(E e) {
-
+        linkFirst(e);
     }
 
     @Override
     public void addLast(E e) {
-
+        linkLast(e);
     }
 
     @Override
@@ -93,16 +184,6 @@ public class CustomLinkedList <E>  extends AbstractSequentialList<E>
 
     @Override
     public E pollLast() {
-        return null;
-    }
-
-    @Override
-    public E getFirst() {
-        return null;
-    }
-
-    @Override
-    public E getLast() {
         return null;
     }
 
@@ -163,7 +244,7 @@ public class CustomLinkedList <E>  extends AbstractSequentialList<E>
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
